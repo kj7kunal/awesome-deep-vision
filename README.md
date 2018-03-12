@@ -1,21 +1,9 @@
-# Awesome Deep Vision [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+# Awesome Deep Vision - My log
 
-A curated list of deep learning resources for computer vision, inspired by [awesome-php](https://github.com/ziadoz/awesome-php) and [awesome-computer-vision](https://github.com/jbhuang0604/awesome-computer-vision).
+A curated list of deep learning resources for computer vision, thanks to - [Jiwon Kim](https://github.com/kjw0612), [Heesoo Myeong](https://github.com/hmyeong), [Myungsub Choi](https://github.com/myungsub), [Jung Kwon Lee](https://github.com/deruci), [Taeksoo Kim](https://github.com/jazzsaxmafia)
 
-Maintainers - [Jiwon Kim](https://github.com/kjw0612), [Heesoo Myeong](https://github.com/hmyeong), [Myungsub Choi](https://github.com/myungsub), [Jung Kwon Lee](https://github.com/deruci), [Taeksoo Kim](https://github.com/jazzsaxmafia)
+Logging what I have read and understood.
 
-We are looking for a maintainer! Let me know (jiwon@alum.mit.edu) if interested.
-
-## Contributing
-Please feel free to [pull requests](https://github.com/kjw0612/awesome-deep-vision/pulls) to add papers.
-
-[![Join the chat at https://gitter.im/kjw0612/awesome-deep-vision](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kjw0612/awesome-deep-vision?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-## Sharing
-+ [Share on Twitter](http://twitter.com/home?status=http://jiwonkim.org/awesome-deep-vision%0ADeep Learning Resources for Computer Vision)
-+ [Share on Facebook](http://www.facebook.com/sharer/sharer.php?u=https://jiwonkim.org/awesome-deep-vision)
-+ [Share on Google Plus](http://plus.google.com/share?url=https://jiwonkim.org/awesome-deep-vision)
-+ [Share on LinkedIn](http://www.linkedin.com/shareArticle?mini=true&url=https://jiwonkim.org/awesome-deep-vision&title=Awesome%20Deep%20Vision&summary=&source=)
 
 ## Table of Contents
 - [Papers](#papers)
@@ -61,8 +49,29 @@ Please feel free to [pull requests](https://github.com/kjw0612/awesome-deep-visi
   * Christian Szegedy, Wei Liu, Yangqing Jia, Pierre Sermanet, Scott Reed, Dragomir Anguelov, Dumitru Erhan, Vincent Vanhoucke, Andrew Rabinovich, CVPR, 2015.
 * VGG-Net [[Web]](http://www.robots.ox.ac.uk/~vgg/research/very_deep/) [[Paper]](http://arxiv.org/pdf/1409.1556)
   * Karen Simonyan and Andrew Zisserman, Very Deep Convolutional Networks for Large-Scale Visual Recognition, ICLR, 2015.
-* AlexNet [[Paper]](http://papers.nips.cc/book/advances-in-neural-information-processing-systems-25-2012)
+* **AlexNet**
+  * [ImageNet Classification with Deep Convolutional Neural Networks](http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf)
   * Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton, ImageNet Classification with Deep Convolutional Neural Networks, NIPS, 2012.
+  * ImageNet LSVRC-2010 contest error rates- Top-1: 37.5% and Top-5: 17.0%
+  * ImageNet LSVRC-2012 contest error rates- Top-5: 15.3%
+  * CNN: 60M parameters and 650K neurons; **8 LAYERS**- 5 CONV layers; Max-Pooling; 3 FC; Softmax; Dropout. Maximizes the multinomial logistic regression objective, which is equivalent to maximizing the average across training cases of the log-probability of the correct label under the prediction distribution.
+  * CNNs- stationarity of statistics and local pixel dependency (spatial information). Shared parameters, lower connections than standard FFNNs. Much easier to TRAIN because of less parameters, and theoretical-best performance only slightly **worse** than FFNNs. Takes 5-6 days to train on 2 GTX 580 3GB GPUs. They suggest faster GPUs will help.
+  * Publically available highly optimized [GPU implementation](https://github.com/akrizhevsky/cuda-convnet2) of CNN operations such as 2D Convolution.
+  * 2: Central 256x256 patch taken from a constant aspect ratio image with shorter side rescaled to 256. **NO preprocessing**. Used **mean subtracted** raw values of the images.
+  * 3.1: ReLU NonLinearity: ReLU converges faster than sigmoid functions (7x faster). Faster learning has great influence on performance of large models trained on large datasets. Non-saturating neurons.
+  * 3.2: Used 2 GPUs:  Cross-GPU parallelization- GPUs are able to read from and write to
+one another’s memory directly, without going through host machine memory. "The parallelization
+scheme that we employ essentially puts half of the kernels (or neurons) on each GPU, with one
+additional trick:  the GPUs communicate only in certain layers". Choosing the pattern of
+connectivity is a problem for cross-validation. The two-GPU net takes slightly less time
+to train than the one-GPU net, which although have only half as many kernels (GPU limit at the time). This scheme reduces our top-1 and top-5 error rates by 1.7% and 1.2%, respectively.
+  * 3.3: [Local Response Normalization](http://yeephycho.github.io/2016/08/03/normalizations_in_neural_networks/#Local-Constrast-Normalization-LCN) (LRN-not used much these days)- This reduces our top-1 and top-5 error rates by 1.4% and 1.2%, respectively. Even though ReLU fires as long as positive inputs are available, to aid generalization, LRN normalizes activations using sum of local adjacent kernel maps. Creates competition for bigger activations.
+  * 3.4: Overlapping Pooling: s = 2 and f = 3. This scheme reduces the top-1 and top-5 error rates by 0.4% and 0.3%, respectively, as compared with the non-overlapping schemes s = f = 2, which produces
+output of equivalent dimensions. Models with overlapping pooling find it slightly more difficult to overfit. However non-overlapping used popularly.
+  * 4.1: Overfitting-Data Augmentation: **Enlarge dataset to reduce overfitting** by using label preserving transformations. Augmentation done on python on CPU while computations done on GPU. Thus, computationally-free augmentations in a sense. **10 images**- {5 224x224 windows- four corners + center}x 2 horizontal reflections. At test time, prediction averaged over these 10 images. **Altering intensities** by performing PCA on RGB pixel value set of the ImageNet training set and adding multiples of principal components. Reduces the top-1 error rate by over 1%.
+  * 4.2: Overfitting- Dropout: Setting to zero the output of each hidden neuron with *keeping probability* 0.5.  The neurons which are “dropped out” in this way do not contribute to the forward pass and do not participate in backpropagation. Reduces **co-adaptations** of neurons, since a neuron cannot rely on the presence of particular other neurons (overfitting, since dependence means higher capacity functions (neurons) learnt than required). Multiply outputs by 0.5 during test time. Roughly **doubles** the no. of iterations for convergence.
+  * 5: SGD; batch size=128; momentum=0.9; weightdecay=0.0005 (Not merely a regularizer-reduces model training error). We initialized the weights with a zero-mean Gaussian distribution with sd=0.01 and neuron biases in the second, fourth, and fifth convolutional layers, as well as in the fully-connected hidden layers, with the constant 1. This initialization accelerates the early stages of learning by providing the ReLUs with positive inputs. *Learning rate divided by 10 whenever cross validation error rate stopped improving.*
+
 
 ### Object Detection
 ![object_detection](https://cloud.githubusercontent.com/assets/5226447/8452063/f76ba500-2022-11e5-8db1-2cd5d490e3b3.PNG)
